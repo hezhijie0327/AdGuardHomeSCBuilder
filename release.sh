@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Current Version: 1.0.0
+# Current Version: 1.0.1
 
 ## How to get and use?
 # git clone "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git" && bash ./AdGuardHomeSCBuilder/release.sh
@@ -9,8 +9,8 @@
 # Get Data
 function GetData() {
     rm -rf ./Temp && mkdir ./Temp && cd ./Temp
-    git clone -b master "https://github.com/AdguardTeam/AdGuardHome.git"
-    git clone -b source "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git"
+    git clone -b master --depth=1 "https://github.com/AdguardTeam/AdGuardHome.git"
+    git clone -b source --depth=1 "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git"
 }
 # Merge Data
 function MergeData() {
