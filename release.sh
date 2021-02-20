@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Current Version: 1.0.1
+# Current Version: 1.0.2
 
 ## How to get and use?
 # git clone "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git" && bash ./AdGuardHomeSCBuilder/release.sh
@@ -11,6 +11,15 @@ function GetData() {
     rm -rf ./Temp && mkdir ./Temp && cd ./Temp
     git clone -b master --depth=1 "https://github.com/AdguardTeam/AdGuardHome.git"
     git clone -b source --depth=1 "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git"
+}
+# Generate Static Info
+function GenerateStaticInfo() {
+    AGHSCB_SHA=$(cd ./AdGuardHomeSCBuilder && git rev-parse --short HEAD | rev | cut -c 1-4 | rev)
+    AGH_SHA=$(cd ./AdGuardHome && git rev-parse --short HEAD | cut -c 1-4)
+    AGH_VERSION=$(wget -qO- "https://api.github.com/repos/AdguardTeam/AdGuardHome/releases/latest" | grep "tag\_name" | tr -cd ".[:digit:]\nv")
+    CPU_CORE_NUM=$(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)
+    ZHIJIE_CHANNEL="development"
+    ZHIJIE_VERSION="${AGH_VERSION}-ZHIJIE-${AGH_SHA}${AGHSCB_SHA}"
 }
 # Merge Data
 function MergeData() {
@@ -40,7 +49,7 @@ function ModifySetting() {
 }
 # Build Code
 function BuildCode() {
-    cd ./AdGuardHome && make -j $(( $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l) * 2 )) build-release CHANNEL="development" VERSION="v$(git describe --abbrev=0 | cut -d "." -f 1-3 | tr -d "A-Za-z-")-ZHIJIE-$(git rev-parse --short HEAD | cut -c 1-4)$(cd ../AdGuardHomeSCBuilder && git rev-parse --short HEAD | rev | cut -c 1-4 | rev)" && cd ..
+    cd ./AdGuardHome && make -j $(( ${CPU_CORE_NUM} * 2 )) build-release CHANNEL="${ZHIJIE_CHANNEL}" VERSION="${ZHIJIE_VERSION}" && cd ..
 }
 # Publish Release
 function PublishRelease() {
@@ -61,6 +70,8 @@ function PublishRelease() {
 ## Process
 # Call GetData
 GetData
+# Call GenerateStaticInfo
+GenerateStaticInfo
 # Call MergeData
 MergeData
 # Call ModifyCode
