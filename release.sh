@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Current Version: 1.0.2
+# Current Version: 1.0.3
 
 ## How to get and use?
 # git clone "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git" && bash ./AdGuardHomeSCBuilder/release.sh
@@ -57,8 +57,9 @@ function PublishRelease() {
         cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && cat ./Temp/AdGuardHome/dist/version.json | jq -Sr '.' > ./development/version.json && rm -rf ./Temp
         exit 0
     else
+        cat ./Temp/AdGuardHome/dist/version.json | jq -Sr '.' > ./development/version.json
         if [ "$(diff ./AdGuardHome/dist/version.json ../development/version.json)" != "" ]; then
-            cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && cat ./Temp/AdGuardHome/dist/version.json | jq -Sr '.' > ./development/version.json && rm -rf ./Temp
+            cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && rm -rf ./Temp
             exit 0
         else
             cd .. && rm -rf ./Temp
