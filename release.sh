@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Current Version: 1.0.4
+# Current Version: 1.0.5
 
 ## How to get and use?
 # git clone "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git" && bash ./AdGuardHomeSCBuilder/release.sh
@@ -41,22 +41,15 @@ function ModifySetting() {
 }
 # Build Code
 function BuildCode() {
-    cd ./AdGuardHome && make -j $(( ${CPU_CORE_NUM} * 2 )) ARCH="amd64 arm64" CHANNEL="${ZHIJIE_CHANNEL}" OS="darwin freebsd linux windows" SIGN="0" SNAP="0" VERSION="${ZHIJIE_VERSION}" build-release && cd ..
+    cd ./AdGuardHome && make -j $(( ${CPU_CORE_NUM} * 2 )) ARCH="amd64 arm64" CHANNEL="${ZHIJIE_CHANNEL}" DIST_DIR="dist" GO="go" GPG_KEY="" GPG_KEY_PASSPHRASE="" OS="darwin freebsd linux windows" SIGN="0" SNAP="0" VERBOSE="3" VERSION="${ZHIJIE_VERSION}" build-release && cd ..
 }
 # Publish Release
 function PublishRelease() {
-    if [ ! -f "../development/version.json" ]; then
-        cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && cat ./Temp/AdGuardHome/dist/version.json | jq -Sr "." > ./development/version.json && rm -rf ./Temp
-        exit 0
+    cd .. && cat ./Temp/AdGuardHome/dist/version.json | grep -v "386\|mips\|mips64\|mips64le\|mipsle\|softfloat" | jq -Sr "." > ./Temp/version.json && cat ./Temp/version.json
+    if [ -d "./development" ] && [ -f "./development/version.json" ] && [ "$(diff ./Temp/version.json ./development/version.json)" == "" ]; then
+        rm -rf ./Temp && exit 0
     else
-        cat ./Temp/AdGuardHome/dist/version.json | jq -Sr "." > ./development/version.json
-        if [ "$(diff ./AdGuardHome/dist/version.json ../development/version.json)" != "" ]; then
-            cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && rm -rf ./Temp
-            exit 0
-        else
-            cd .. && rm -rf ./Temp
-            exit 0
-        fi
+        rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*.zip ./development && mv ./Temp/version.json ./development && rm -rf ./Temp && exit 0
     fi
 }
 
