@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Current Version: 1.0.3
+# Current Version: 1.0.4
 
 ## How to get and use?
 # git clone "https://github.com/hezhijie0327/AdGuardHomeSCBuilder.git" && bash ./AdGuardHomeSCBuilder/release.sh
@@ -27,19 +27,11 @@ function MergeData() {
 }
 # Modify Code
 function ModifyCode() {
-    cat ./AdGuardHome/Makefile | sed "s/SIGN\ \=\ 1/SIGN\ \=\ 0/g" > ./AdGuardHome/Makefile.tmp && mv ./AdGuardHome/Makefile.tmp ./AdGuardHome/Makefile
     cat ./AdGuardHome/client/src/components/Settings/Dns/Upstream/Examples.js | sed "s/94\.140\.14\.140/\[223\.5\.5\.5\]\:53/g;s/\[\/example\.local\/\]\[223\.5\.5\.5\]\:53/\[\/example\.local\/\]https\:\/\/dns\.alidns\.com\:443\/dns\-query/g;s/comment<\/code>/在此处添加注释<\/code>/g;s/https\:\/\/dns\-unfiltered\.adguard\.com/https\:\/\/dns\.alidns\.com\:443/g;s/quic\:\/\/dns\-unfiltered\.adguard\.com\:784/quic\:\/\/dns\.alidns\.com\:784/g;s/tcp\:\/\/\[223\.5\.5\.5\]\:53/tcp\:\/\/dns\.alidns\.com\:53/g;s/tls\:\/\/dns\-unfiltered\.adguard\.com/tls\:\/\/dns\.alidns\.com\:853/g" > ./AdGuardHome/client/src/components/Settings/Dns/Upstream/Examples.js.tmp && mv ./AdGuardHome/client/src/components/Settings/Dns/Upstream/Examples.js.tmp ./AdGuardHome/client/src/components/Settings/Dns/Upstream/Examples.js
     cat ./AdGuardHome/client/src/components/ui/Checkbox.js | sed "s/checkbox\_\_label\-text/checkbox\_\_label\-text\ checkbox\_\_label\-text\-\-long/g" > ./AdGuardHome/client/src/components/ui/Checkbox.js.tmp && mv ./AdGuardHome/client/src/components/ui/Checkbox.js.tmp ./AdGuardHome/client/src/components/ui/Checkbox.js
     cat ./AdGuardHome/client/src/components/ui/Footer.js | sed "s/AdGuard/AdGuard\｜治杰\ Online/g" > ./AdGuardHome/client/src/components/ui/Footer.js.tmp && mv ./AdGuardHome/client/src/components/ui/Footer.js.tmp ./AdGuardHome/client/src/components/ui/Footer.js
     cat ./AdGuardHome/internal/updater/updater.go | sed "s/\"adguardhome\"\,\ conf\.Channel\,\ \"version\.json\"/\"AdGuardHomeSCBuilder\"\,\ \"main\"\,\ conf\.Channel\,\ \"version\.json\"/g;s/static\.adguard\.com/source\.zhijie\.online/g" > ./AdGuardHome/internal/updater/updater.go.tmp && mv ./AdGuardHome/internal/updater/updater.go.tmp ./AdGuardHome/internal/updater/updater.go
     cat ./AdGuardHome/scripts/make/build-release.sh | sed "s/https\:\/\/github\.com\/AdguardTeam\/AdGuardHome\/releases/https\:\/\/github\.com\/AdguardTeam\/AdGuardHome\/commits\/master/g;s/https\:\/\/static\.adguard.com\/adguardhome/https\:\/\/source\.zhijie\.online\/AdGuardHomeSCBuilder\/main/g" > ./AdGuardHome/scripts/make/build-release.sh.tmp && mv ./AdGuardHome/scripts/make/build-release.sh.tmp ./AdGuardHome/scripts/make/build-release.sh
-    if [ "$(go version | grep '1\.14')" == "" ] && [ "$(go version | grep '1\.16')" == "" ]; then
-        build_release_sh_patch="s/darwin\ \ \ 386/darwin\ \ \ amd64/g"
-    elif [ "$(go version | grep '1\.14')" == "" ] && [ "$(go version | grep '1\.16')" != "" ]; then
-        build_release_sh_patch="s/darwin\ \ \ 386/darwin\ \ \ arm64/g"
-    else
-        build_release_sh_patch="s/darwin\ \ \ 386/darwin\ \ \ 386/g"
-    fi && cat ./AdGuardHome/scripts/make/build-release.sh | sed "${build_release_sh_patch}" > ./AdGuardHome/scripts/make/build-release.sh.tmp && mv ./AdGuardHome/scripts/make/build-release.sh.tmp ./AdGuardHome/scripts/make/build-release.sh
 }
 # Modify Setting
 function ModifySetting() {
@@ -49,15 +41,15 @@ function ModifySetting() {
 }
 # Build Code
 function BuildCode() {
-    cd ./AdGuardHome && make -j $(( ${CPU_CORE_NUM} * 2 )) build-release CHANNEL="${ZHIJIE_CHANNEL}" VERSION="${ZHIJIE_VERSION}" && cd ..
+    cd ./AdGuardHome && make -j $(( ${CPU_CORE_NUM} * 2 )) ARCH="amd64 arm64" CHANNEL="${ZHIJIE_CHANNEL}" OS="darwin freebsd linux windows" SIGN="0" SNAP="0" VERSION="${ZHIJIE_VERSION}" build-release && cd ..
 }
 # Publish Release
 function PublishRelease() {
     if [ ! -f "../development/version.json" ]; then
-        cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && cat ./Temp/AdGuardHome/dist/version.json | jq -Sr '.' > ./development/version.json && rm -rf ./Temp
+        cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && cat ./Temp/AdGuardHome/dist/version.json | jq -Sr "." > ./development/version.json && rm -rf ./Temp
         exit 0
     else
-        cat ./Temp/AdGuardHome/dist/version.json | jq -Sr '.' > ./development/version.json
+        cat ./Temp/AdGuardHome/dist/version.json | jq -Sr "." > ./development/version.json
         if [ "$(diff ./AdGuardHome/dist/version.json ../development/version.json)" != "" ]; then
             cd .. && rm -rf ./development && mkdir ./development && mv ./Temp/AdGuardHome/dist/*_darwin_*.zip ./development && mv ./Temp/AdGuardHome/dist/*_freebsd_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_linux_*.tar.gz ./development && mv ./Temp/AdGuardHome/dist/*_windows_*.zip ./development && rm -rf ./Temp
             exit 0
