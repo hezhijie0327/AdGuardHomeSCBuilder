@@ -1,5 +1,5 @@
 {
-  "announcement": "AdGuard Home v0.105.2-ZHIJIE-c08b4795 is now available!",
+  "announcement": "AdGuard Home v0.105.2-ZHIJIE-96884795 is now available!",
   "announcement_url": "https://github.com/AdguardTeam/AdGuardHome/commits/master",
   "download_darwin_amd64": "https://source.zhijie.online/AdGuardHomeSCBuilder/main/development/AdGuardHome_darwin_amd64.zip",
   "download_freebsd_amd64": "https://source.zhijie.online/AdGuardHomeSCBuilder/main/development/AdGuardHome_freebsd_amd64.tar.gz",
@@ -8,5 +8,5 @@
   "download_linux_arm64": "https://source.zhijie.online/AdGuardHomeSCBuilder/main/development/AdGuardHome_linux_arm64.tar.gz",
   "download_windows_amd64": "https://source.zhijie.online/AdGuardHomeSCBuilder/main/development/AdGuardHome_windows_amd64.zip",
   "selfupdate_min_version": "0.0",
-  "version": "v0.105.2-ZHIJIE-c08b4795"
+  "version": "v0.105.2-ZHIJIE-96884795"
 }
